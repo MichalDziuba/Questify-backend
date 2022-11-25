@@ -3,15 +3,14 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 require("dotenv").config();
-const session=require('express-session');
+
 const app = express();
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const passport = require("passport");
 const path = require("path");
 const apiRouter = require("./api/index");
 const PORT = process.env.PORT || 8080;
-const uriDb = process.env.DB_HOST;
+const uriDb = process.env.MONGODB_URI;
 
 
 app.use(cors());
