@@ -10,7 +10,7 @@ const logger = require("morgan");
 const path = require("path");
 const apiRouter = require("./api/index");
 const PORT = process.env.PORT || 8080;
-const uriDb = process.env.MONGODB_URI;
+const uriDb = "mongodb+srv://michaldziuba:MHAOyoZ5qL9RP9Wx@questify.epieycx.mongodb.net/questify?retryWrites=true&w=majority";
 
 
 app.use(cors());
