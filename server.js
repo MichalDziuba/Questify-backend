@@ -41,7 +41,6 @@ app.use((err, _, ___) => {
 });
 
 const connection = mongoose.connect(uriDb, {
-  // promiseLibrary: global.Promise,
 });
 
 connection
