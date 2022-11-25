@@ -25,7 +25,9 @@ require("./api/config-passport")
 
 
 app.use("/", apiRouter);
-
+app.get('/', (req, res) => {
+  res.send("Welcome to Questify backend!!")
+})
 app.use((_, res, __) => {
   res.status(404).json({
 message: "Not found!",
