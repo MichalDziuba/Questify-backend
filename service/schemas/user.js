@@ -4,13 +4,9 @@ const user = new Schema(
   {
     name: {
       type: String,
-      minlength: 2,
-      maxlength: 50,
     },
     email: {
       type: String,
-      minlength: 3,
-      maxlength: 50,
       required: [true, "Email required"],
       unique: true,
     },

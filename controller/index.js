@@ -1,18 +1,26 @@
-const e = require("connect-flash");
 const service = require("../service/index");
+const {
+  userRegisterSchema,
+  userLoginSchema,
+  newQuestSchema,
+  editQuestSchema,
+  idSchema,
+} = require("../service/schemas/validationSchemas");
 
 const register = async (req, res, next) => {
   const { name, email, password } = req.body;
-  if (!name || !email || !password) {
+  const validate = userRegisterSchema.validate({ name, email, password });
+
+  if (validate.error) {
     res.status(401).json({
-      message: "All fields are required!",
+      message: validate.error.message,
     });
   } else {
     try {
-      const isUser = await service.findUserByEmail(email);
-      if (!isUser) {
+      const isUserExist = await service.findUserByEmail(email);
+      if (!isUserExist) {
         await service.createUser(name, email, password);
-        await service.createArrayItems(email);
+        await service.createQuestsArray(email);
         res.status(201).json({
           message: "Registration successful",
         });
@@ -22,7 +30,6 @@ const register = async (req, res, next) => {
         });
       }
     } catch (e) {
-      console.log(e);
       next(e);
     }
   }
@@ -30,59 +37,64 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
-  const isUser = await service.findUserByEmail(email);
-  if (!email || !password) {
-    res.status(401).json({ message: "Email or password cannot be empty" });
+  const validate = userLoginSchema.validate({ email, password });
+  const isUserExist = await service.findUserByEmail(email);
+
+  if (validate.error) {
+    res.status(401).json({ message: validate.error.message });
   } else {
     try {
-      if (isUser) {
+      if (isUserExist) {
+
         const loginFeedback = await service.loginUser(email, password);
-        res.status(loginFeedback.code).json(loginFeedback.data);
         const data = loginFeedback.data;
+
+        res.status(200).json(data);
       } else {
         res.status(401).json({
           message: "Email or password incorrect",
         });
       }
     } catch (e) {
-      console.log(e);
-      next();
+      next(e);
     }
   }
 };
 
 const logout = async (req, res, next) => {
+
   const user = res.locals.user;
   await service.logoutUser(user.email);
+
   try {
     res.status(200).json({
       message: "Logout successful",
     });
   } catch (e) {
-    console.log(e);
     next(e);
   }
 };
 const getQuests = async (req, res, next) => {
   const user = res.locals.user;
-  const itemsList = await service.getAllQuests(user.email);
-
+  const questsList = await service.getAllQuests(user.email);
   try {
     res.status(200).json({
-      data: itemsList,
+      data: questsList,
     });
   } catch (e) {
-    console.log(e);
     next(e);
   }
 };
+
 const addQuest = async (req, res, next) => {
   const user = res.locals.user;
-  console.log(user);
+
   const { title, level, category } = req.body;
-  if (!title || !level || !category) {
+  const validate = newQuestSchema.validate({ title, level, category });
+
+  if (validate.error) {
     res.status(406).json({
-      message: "Missing fields!",
+      message: validate.error.message,
     });
   } else {
     try {
@@ -91,7 +103,6 @@ const addQuest = async (req, res, next) => {
         message: "Created!",
       });
     } catch (e) {
-      console.log(e);
       next(e);
     }
   }
@@ -99,24 +110,28 @@ const addQuest = async (req, res, next) => {
 const updateQuest = async (req, res, next) => {
   const { id, data } = req.body;
   const user = res.locals.user;
-  if (!id || !data) {
+
+  const validateData = editQuestSchema.validate(data);
+  const validateId = idSchema.validate(id);
+  
+  if (validateId.error) {
     res.status(400).json({
-      message: "No id or data!",
+      message: validateId.error.message,
+    });
+  } else if (validateData.error) {
+    res.status(400).json({
+      message: validateData.error.message,
     });
   } else {
     try {
-      const isUpdateSuccessful = await service.updateQuest(user.email, id, {
+      await service.updateQuest(user.email, id, {
         data,
       });
-      if (isUpdateSuccessful) {
-        res.status(200).json({
-          message: "Edit successful",
-        });
-      } else {
-        res.status(403).json({ message: "Unauthorized request" });
-      }
+
+      res.status(200).json({
+        message: "Edit successful",
+      });
     } catch (e) {
-      console.log(e);
       next(e);
     }
   }
@@ -125,25 +140,20 @@ const updateQuest = async (req, res, next) => {
 const deleteQuest = async (req, res, next) => {
   const user = res.locals.user;
   const { id } = req.body;
-  console.log(id);
-  if (!id) {
+
+  const validateId = idSchema.validate(id);
+  if (validateId.error) {
     res.status(400).json({
-      message: " No id",
+      message: validateId.error.message,
     });
   } else {
-    const deleteSuccessful = await service.deleteQuest(user.email, id);
-    if (deleteSuccessful) {
-      try {
-        res.status(200).json({
-          message: "Deleted",
-        });
-      } catch (e) {
-        console.log(e);
-        next();
-      }
-    } else {
-      res.status(404).json({});
-     
+    try {
+      await service.deleteQuest(user.email, id);
+      res.status(200).json({
+        message: "Deleted",
+      });
+    } catch (e) {
+      next(e);
     }
   }
 };

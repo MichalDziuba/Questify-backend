@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const Quest = require('./quest')
+
 
 const items = new Schema(
   {
@@ -16,9 +16,7 @@ const items = new Schema(
     timestamps: true,
   }
 );
-items.methods.addQuest = function (quest) {
-  this.items.push(quest)
-}
+
 
 
 const Items = model("quest-list", items);

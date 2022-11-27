@@ -2,6 +2,12 @@ const User = require("./schemas/user");
 const Items = require("./schemas/items-list");
 const Quest = require("./schemas/quest");
 const jwt = require("jsonwebtoken");
+const { Types } = require("mongoose");
+
+
+
+//USER!
+
 const createUser = async (name, email, password) => {
   const newUser = await new User({ name: name, email: email });
 
@@ -22,7 +28,7 @@ const loginUser = async (email, password) => {
     await user.setToken(token);
     await user.save();
     return {
-      code: 200,
+      
       data: {
         message: "Login successful",
         data: {
@@ -50,14 +56,19 @@ const findUserByToken = (filter) => {
   return User.findOne({ token: filter }).lean();
 };
 
+//Quests!
 
-const createArrayItems = (email) => {
+const createQuestsArray = (email) => {
   return Items.create({ owner: email });
 };
 const getAllQuests = async (email) => {
-  const collection = await Items.findOne({ owner: email });
-  const ids = collection.items.map(e=>e.toString());
-  const items = await Quest.find({ '_id': { $in: ids } });
+
+  const collection = await Items.findOne({ owner: email }).lean();
+  if (!collection) {
+    Items.create({owner:email})
+  }
+  const ids = collection?.items.map(e=>e.toString());
+  const items = await Quest.find({ '_id': { $in: ids } }).lean();
   return items
 };
 
@@ -66,21 +77,28 @@ const createQuest = async (email, { title, level, category }) => {
   quest.save()
   return Items.findOneAndUpdate({ owner: email }, { $push: { items: quest } }).lean();
 };
-const updateQuest = async (email,id, { data }) => {
+const updateQuest = async (email, id, { data }) => {
   return await Quest.findOneAndUpdate({ _id: id, owner:email },data);
 }
 const deleteQuest = async (email,id) => {
-  await Quest.findOneAndRemove({ _id: id, owner:email });
+  await Quest.findOneAndRemove({ _id: id, owner: email });
+  await Items.findOneAndUpdate({ owner: email },
+  {$pull:{items:Types.ObjectId(id)}} 
+  );
 }
+
+
 module.exports = {
   createUser,
   loginUser,
   logoutUser,
   findUserByEmail,
   findUserByToken,
-  createArrayItems,
+  createQuestsArray,
   getAllQuests,
   createQuest,
   updateQuest,
   deleteQuest,
 };
+
+
