@@ -45,11 +45,16 @@ const login = async (req, res, next) => {
   } else {
     try {
       if (isUserExist) {
-
         const loginFeedback = await service.loginUser(email, password);
         const data = loginFeedback.data;
 
-        res.status(200).json(data);
+        if (loginFeedback.code === 401) {
+          res.status(401).json({
+            message: "Email or password incorrect",
+          });
+        } else {
+          res.status(200).json(data);
+        }
       } else {
         res.status(401).json({
           message: "Email or password incorrect",
@@ -62,7 +67,6 @@ const login = async (req, res, next) => {
 };
 
 const logout = async (req, res, next) => {
-
   const user = res.locals.user;
   await service.logoutUser(user.email);
 
@@ -113,7 +117,7 @@ const updateQuest = async (req, res, next) => {
 
   const validateData = editQuestSchema.validate(data);
   const validateId = idSchema.validate(id);
-  
+
   if (validateId.error) {
     res.status(400).json({
       message: validateId.error.message,
