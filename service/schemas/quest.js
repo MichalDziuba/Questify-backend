@@ -1,3 +1,4 @@
+const { string } = require("joi");
 const { Schema, model } = require("mongoose");
 
 
@@ -21,11 +22,11 @@ const quest = new Schema(
       enum:["stuff","family","health","learning","leisure","work"],
       required: true,
     },
-    isChallenge: {
-      type: Boolean,
-      default: false,
+    date: {
+      type: String,
+      required:true,
     },
-    isDone: {
+    isChallenge: {
       type: Boolean,
       default: false,
     },

@@ -72,8 +72,8 @@ const getAllQuests = async (email) => {
   return items
 };
 
-const createQuest = async (email, { title, level, category }) => {
-  const quest = new Quest({ owner: email, title: title, level: level, category });
+const createQuest = async (email, { title, level, category,date }) => {
+  const quest = new Quest({ owner: email, title: title, level: level, category,date:date });
   quest.save()
   return Items.findOneAndUpdate({ owner: email }, { $push: { items: quest } }).lean();
 };

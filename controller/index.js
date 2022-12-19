@@ -93,8 +93,8 @@ const getQuests = async (req, res, next) => {
 const addQuest = async (req, res, next) => {
   const user = res.locals.user;
 
-  const { title, level, category } = req.body;
-  const validate = newQuestSchema.validate({ title, level, category });
+  const { title, level, category, date } = req.body;
+  const validate = newQuestSchema.validate({ title, level, category, date });
 
   if (validate.error) {
     res.status(406).json({
@@ -102,7 +102,7 @@ const addQuest = async (req, res, next) => {
     });
   } else {
     try {
-      await service.createQuest(user.email, { title, level, category });
+      await service.createQuest(user.email, { title, level, category,date });
       res.status(201).json({
         message: "Created!",
       });
@@ -119,12 +119,14 @@ const updateQuest = async (req, res, next) => {
   const validateId = idSchema.validate(id);
 
   if (validateId.error) {
+    console.log("if")
     res.status(400).json({
-      message: validateId.error.message,
+      message: validateId.error,
     });
   } else if (validateData.error) {
+    console.log("else if")
     res.status(400).json({
-      message: validateData.error.message,
+      message: validateData.error,
     });
   } else {
     try {

@@ -17,16 +17,25 @@ const newQuestSchema = Joi.object({
   category: Joi.string()
     .valid("stuff", "family", "health", "learning", "leisure", "work")
     .required(),
+  date:Joi.string().required(),
 });
 
 const editQuestSchema = Joi.object({
   title: Joi.string().min(1),
   level: Joi.string().valid("easy", "normal", "hard"),
-  category: Joi.string()
-    .valid("stuff", "family", "health", "learning", "leisure", "work"),
+  category: Joi.string().valid(
+    "stuff",
+    "family",
+    "health",
+    "learning",
+    "leisure",
+    "work"
+  ),
   isChallenge: Joi.boolean(),
-  isDone: Joi.boolean(),
-}).required().min(1);
+  date: Joi.string(),
+})
+  .required()
+  .min(1);
 
 
 
