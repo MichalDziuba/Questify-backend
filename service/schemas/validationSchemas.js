@@ -1,3 +1,4 @@
+const { boolean } = require("joi");
 const Joi = require("joi");
 
 const userRegisterSchema = Joi.object({
@@ -17,7 +18,8 @@ const newQuestSchema = Joi.object({
   category: Joi.string()
     .valid("stuff", "family", "health", "learning", "leisure", "work")
     .required(),
-  date:Joi.string().required(),
+  date: Joi.string().required(),
+  isChallenge: Joi.boolean().required()
 });
 
 const editQuestSchema = Joi.object({

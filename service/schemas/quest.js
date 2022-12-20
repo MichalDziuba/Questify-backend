@@ -28,7 +28,7 @@ const quest = new Schema(
     },
     isChallenge: {
       type: Boolean,
-      default: false,
+      required:true,
     },
   },
   {
