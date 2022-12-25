@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8080;
 const uriDb = process.env.MONGODB_URI;
 
 
-// app.use(cors());
+app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
