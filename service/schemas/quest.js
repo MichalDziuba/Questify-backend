@@ -30,6 +30,10 @@ const quest = new Schema(
       type: Boolean,
       required:true,
     },
+    isDone: {
+      type: Boolean,
+      required:true,
+    }
   },
   {
     versionKey: false,

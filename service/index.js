@@ -72,8 +72,8 @@ const getAllQuests = async (email) => {
   return items
 };
 
-const createQuest = async (email, { title, level, category,date,isChallenge }) => {
-  const quest = new Quest({ owner: email, title: title, level: level, category,date:date,isChallenge:isChallenge });
+const createQuest = async (email, { title, level, category,date,isChallenge,isDone }) => {
+  const quest = new Quest({ owner: email, title: title, level: level, category,date:date,isChallenge:isChallenge,isDone:isDone });
   quest.save()
  
   

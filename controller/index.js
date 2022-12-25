@@ -93,8 +93,8 @@ const getQuests = async (req, res, next) => {
 const addQuest = async (req, res, next) => {
   const user = res.locals.user;
 
-  const { title, level, category, date,isChallenge } = req.body;
-  const validate = newQuestSchema.validate({ title, level, category, date,isChallenge });
+  const { title, level, category, date, isChallenge, isDone } = req.body;
+  const validate = newQuestSchema.validate({ title, level, category, date,isChallenge,isDone });
 
   if (validate.error) {
     res.status(406).json({
@@ -102,7 +102,7 @@ const addQuest = async (req, res, next) => {
     });
   } else {
     try {
-      const response = await service.createQuest(user.email, { title, level, category, date,isChallenge });
+      const response = await service.createQuest(user.email, { title, level, category, date,isChallenge,isDone });
      
       res.status(201).json({
         message: "Created!",
